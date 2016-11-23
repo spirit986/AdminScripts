@@ -15,5 +15,5 @@ fi
 LOCATION=$1;
 PATTERN=$2;
 
-grep -rnw $LOCATION -e "$PATTERN";
+grep --color=always -rnw $LOCATION -e "$PATTERN";
 
