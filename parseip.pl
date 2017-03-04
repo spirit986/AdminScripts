@@ -15,37 +15,51 @@ print "Dumping log output: \n";
 my $line;
 foreach $line (@output)
 {
-	print "$line\n";
+        print "$line\n";
+}
+
+# Extract the ip addresses, then put them into an array
+my $RE;
+my @ip_addresses = ();
+foreach $line (@output)
+{
+        $line =~ /$RE{net}{IPv4}{-keep}/;
+        push @ip_addresses, $1;
 }
 
 print "\n\n";
 print "Creating IPTables drop commands:\n";
-
-# Extract the ip addresses, then put them into an array
-my $RE;
-my $iptables_command;
-my @raw_iptables_cmds = ();
-foreach $line (@output)
-{
-	$line =~ /$RE{net}{IPv4}{-keep}/;
-	$iptables_command = "iptables -I FORWARD -s $1 -j DROP\n";
-	push @raw_iptables_cmds, $iptables_command; 
-}
-
+# Sort the unique IP Address.
+# Get unique whois information
+# Create IPTables command with the whois information in comments
 my %seen = ();
 my @iptables_cmds = ();
-my $item;
-foreach $item (@raw_iptables_cmds)
+my $ipaddress;
+my $iptables_command;
+my @whois_country;
+my $country;
+foreach $ipaddress (@ip_addresses)
 {
-	unless ($seen{$item})
-	{
-		# if we get here, we have not seen it before
-		$seen{$item} = 1;
-		push @iptables_cmds, $item;
-	}
+        unless ($seen{$ipaddress})
+        {
+                # if we get here, we have not seen it before
+                $seen{$ipaddress} = 1;
+                @whois_country = `whois $ipaddress | grep country:`;
+                if (!@whois_country) {
+                        $country = "No Country information available...";
+                } else {
+                        chomp($whois_country[0]);
+                        $country = substr $whois_country[0], -2;
+                }
+
+                $iptables_command = "iptables -I FORWARD -s $ipaddress -j DROP # Country: $country\n";
+                push @iptables_cmds, $iptables_command;
+                @whois_country = ();
+        }
 }
 
 foreach $line (@iptables_cmds)
 {
-	print "$line";
+        print "$line";
 }
+
