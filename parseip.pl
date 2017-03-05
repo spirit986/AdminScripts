@@ -6,7 +6,17 @@ use Regexp::Common qw /net/;
 use IO::Prompter;
 
 my $date_input = prompt "Enter a date, ex: Jan 01:", -echo=>'';
-my $cmd = "journalctl -u postfix.service | grep '$date_input'";
+
+my $today = `date +"%b %d"`;
+chomp($today);
+if ($date_input eq '')
+{
+		$date_input = $today;
+		print "No date specified, using today's date - $date_input.\n\n";
+}
+
+my $cmd = "journalctl -u postfix.service | grep '$date_input'\n\n";
+print "$cmd\n\n";
 
 my @output = `$cmd`;
 chomp @output;
