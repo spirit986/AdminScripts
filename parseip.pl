@@ -44,7 +44,7 @@ foreach $ipaddress (@ip_addresses)
         {
                 # if we get here, we have not seen it before
                 $seen{$ipaddress} = 1;
-                @whois_country = `whois $ipaddress | grep country:`;
+                @whois_country = `whois $ipaddress | grep -i country:`;
                 if (!@whois_country) {
                         $country = "No Country information available...";
                 } else {
