@@ -37,8 +37,9 @@ foreach $line (@output)
         push @ip_addresses, $1;
 }
 
-print "\n\n";
-print "Creating IPTables drop commands:\n";
+print "-------------------------------------------------------------------------------\n\n";
+print "Creating IPTables drop commands.\nAccessing IP whois reccords. Please wait, it may take a while.\n";
+
 # Sort the unique IP Address.
 # Get unique whois information
 # Create IPTables command with the whois information in comments
@@ -54,6 +55,8 @@ foreach $ipaddress (@ip_addresses)
         {
                 # if we get here, we have not seen it before
                 $seen{$ipaddress} = 1;
+				
+				# whois may return multible values (rows)
                 @whois_country = `whois $ipaddress | grep -i country:`;
                 if (!@whois_country) {
                         $country = "No Country information available...";
@@ -61,6 +64,12 @@ foreach $ipaddress (@ip_addresses)
                         chomp($whois_country[0]);
                         $country = substr $whois_country[0], -2;
                 }
+
+				# Put some warnings if the country is MK or US
+				if (uc($country) eq 'MK' || uc($country) eq 'US')
+				{	
+						$country .= ' | *** CAREFULL ***';
+				}
 
                 $iptables_command = "iptables -I FORWARD -s $ipaddress -j DROP # Country: $country\n";
                 push @iptables_cmds, $iptables_command;
