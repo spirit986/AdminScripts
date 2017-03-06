@@ -11,21 +11,21 @@ my $today = `date +"%b %d"`;
 chomp($today);
 if ($date_input eq '')
 {
-		$date_input = $today;
-		print "No date specified, using today's date - $date_input.\n\n";
+	$date_input = $today;
+	print "No date specified, using today's date - $date_input.\n\n";
 }
 
-my $cmd = "journalctl -u postfix.service | grep '$date_input'\n\n";
-print "$cmd\n\n";
+my $cmd = "journalctl -u postfix.service | grep '$date_input'";
+print "$cmd";
 
 my @output = `$cmd`;
 chomp @output;
 
-print "Dumping log output: \n";
+print "\n\nDumping log output: \n-------------------------------------------------------------------------------\n";
 my $line;
 foreach $line (@output)
 {
-        print "$line\n";
+	print "$line\n";
 }
 
 # Extract the ip addresses, then put them into an array
@@ -33,11 +33,11 @@ my $RE;
 my @ip_addresses = ();
 foreach $line (@output)
 {
-        $line =~ /$RE{net}{IPv4}{-keep}/;
-        push @ip_addresses, $1;
+	$line =~ /$RE{net}{IPv4}{-keep}/;
+	push @ip_addresses, $1;
 }
 
-print "-------------------------------------------------------------------------------\n\n";
+print "-------------------------------------------------------------------------------\n\n\n";
 print "Creating IPTables drop commands.\nAccessing IP whois reccords. Please wait, it may take a while.\n";
 
 # Sort the unique IP Address.
@@ -51,34 +51,34 @@ my @whois_country;
 my $country;
 foreach $ipaddress (@ip_addresses)
 {
-        unless ($seen{$ipaddress})
-        {
-                # if we get here, we have not seen it before
-                $seen{$ipaddress} = 1;
-				
-				# whois may return multible values (rows)
-                @whois_country = `whois $ipaddress | grep -i country:`;
-                if (!@whois_country) {
-                        $country = "No Country information available...";
-                } else {
-                        chomp($whois_country[0]);
-                        $country = substr $whois_country[0], -2;
-                }
+	unless ($seen{$ipaddress})
+	{
+		# if we get here, we have not seen it before
+		$seen{$ipaddress} = 1;
 
-				# Put some warnings if the country is MK or US
-				if (uc($country) eq 'MK' || uc($country) eq 'US')
-				{	
-						$country .= ' | *** CAREFULL ***';
-				}
+		# whois may return multible values (rows)
+		@whois_country = `whois $ipaddress | grep -i country:`;
+		if (!@whois_country)
+		{
+			$country = "No Country information available...";
+		} else {
+			chomp($whois_country[0]);
+			$country = substr $whois_country[0], -2;
+		}
 
-                $iptables_command = "iptables -I FORWARD -s $ipaddress -j DROP # Country: $country\n";
-                push @iptables_cmds, $iptables_command;
-                @whois_country = ();
-        }
+		# Put some warnings if the country is MK or US
+		if (uc($country) eq 'MK' || uc($country) eq 'US')
+		{
+			$country .= ' | *** CAREFULL ***';
+		}
+
+		$iptables_command = "iptables -I FORWARD -s $ipaddress -j DROP # Country: $country\n";
+		push @iptables_cmds, $iptables_command;
+		@whois_country = ();
+	}
 }
 
 foreach $line (@iptables_cmds)
 {
-        print "$line";
+	print "$line";
 }
-
