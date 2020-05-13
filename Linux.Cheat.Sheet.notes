@@ -441,7 +441,7 @@ done
 root@server:~#
 [end]
 
-## Disc hot add script
+## Disk hot add script
 [bash]
 root@librenms:~# cat rescan.sh
 
