@@ -1,0 +1,40 @@
+---
+- hosts: ubuntu
+  become: true
+  tasks:
+    - name: Set hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Set timezone
+      timezone:
+        name: Europe/Paris
+
+    - name: Apt update
+      apt:
+        update_cache: yes
+
+    - name: Apt install usefull packages
+      apt:
+        pkg:
+          - vim
+          - nano
+          - curl
+          - wget
+          - tcpdump
+          - git
+          - python3
+          - python3-pip
+          - tcpdump
+          - telnet
+          - netcat
+          - whois
+          - pstree
+          - tree
+          - nethogs
+          - mlocate
+          - iputils
+          - net-tools
+          - ncdu
+          - libssl-dev
+...
