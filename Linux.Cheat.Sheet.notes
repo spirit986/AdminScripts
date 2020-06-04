@@ -198,7 +198,7 @@ find /tmp/*/* -mtime +7 -type d -exec rmdir {} \;
 
 
 ## Secure linux history
-# CentOS
+## The bellow options will make the linux history with a timestamp, will immediately log the history and will log the history to syslog
 [bash]
 cat >>/etc/profile.d/history.sh <<EOF
 export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug "$(whoami) [$$] [$PWD] : $(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//" ) [$RETRN_VAL]"; history -a; history -c; history -r;'
@@ -211,7 +211,6 @@ local6.*        /var/log/commands.log
 EOF
 [end]
 
-# Ubuntu
 
 
 -------------------------------------------------------------------------------
