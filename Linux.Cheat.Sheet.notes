@@ -187,6 +187,33 @@ export PS1="\[\033[38;5;9m\]\n[\$?] \u@\h\[$(tput sgr0)\]\[\033[38;5;15m\]\n\w \
 stat -c "%a %n" * 
 
 
+## Delete foldes/folders older than X days
+
+# the basic format - for files
+$ find /tmp/*/* -mtime +7 -type f -exec rmdir {} \;
+
+# the basic format - for folders
+find /tmp/*/* -mtime +7 -type d -exec rmdir {} \;
+
+
+
+## Secure linux history
+# CentOS
+[bash]
+cat >>/etc/profile.d/history.sh <<EOF
+export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug "$(whoami) [$$] [$PWD] : $(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//" ) [$RETRN_VAL]"; history -a; history -c; history -r;'
+export HISTTIMEFORMAT="%F %T "
+export HISTFILESIZE="5000"
+EOF
+
+cat >>/etc/rsyslog.d/commands.conf <<EOF
+local6.*        /var/log/commands.log
+EOF
+[end]
+
+# Ubuntu
+
+
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 --- GIT
