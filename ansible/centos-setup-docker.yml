@@ -1,0 +1,25 @@
+---
+- hosts: centos
+  become: true
+  tasks:
+    - name: Download the rancher docker installer script
+      get_url: 
+        url: https://releases.rancher.com/install-docker/19.03.5.sh
+        dest: /tmp
+        mode: 0755
+
+    - name: Execute the installer
+      shell: /tmp/19.03.5.sh
+
+    - name: Add the user centos to the docker group
+      user:
+        name: centos
+        groups: docker
+        append: yes
+
+    - name: "Make sure docker.service is enabled"
+      systemd:
+        name: docker.service
+        state: started
+        enabled: yes
+...

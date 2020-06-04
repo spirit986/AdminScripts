@@ -1,0 +1,43 @@
+---
+- hosts: centos
+  become: true
+  tasks:
+    - name: Set hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Set timezone
+      timezone:
+        name: Europe/Paris
+
+    - name: Yum update
+      yum:
+        update_cache: yes
+        name: '*'
+        state: latest
+        
+    - name: Install usefull packages
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - epel-release
+          - vim
+          - nano
+          - curl
+          - wget
+          - tcpdump
+          - git
+          - net-tools
+          - bash-completion
+          - openssl-devel
+          - httpd-tools
+          - netcat
+          - whois
+          - mlocate
+          - ncdu
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+...
