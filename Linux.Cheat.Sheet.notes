@@ -200,7 +200,7 @@ find /tmp/*/* -mtime +7 -type d -exec rmdir {} \;
 ## Secure linux history
 ## The bellow options will make the linux history with a timestamp, will immediately log the history and will log the history to syslog
 [bash]
-cat >>/etc/profile.d/history.sh <<EOF
+cat >>/etc/profile.d/history.sh <<'EOF'
 export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug "$(whoami) [$$] [$PWD] : $(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//" ) [$RETRN_VAL]"; history -a; history -c; history -r;'
 export HISTTIMEFORMAT="%F %T "
 export HISTFILESIZE="5000"
@@ -211,6 +211,10 @@ local6.*        /var/log/commands.log
 EOF
 [end]
 
+
+## Cool way to keep your SSH session open
+#  Can be used in case there is an auto-session-terminate-logout implemented in the system 
+ping 127.0.0.1 >/dev/null 2>&1 &
 
 
 -------------------------------------------------------------------------------
