@@ -196,7 +196,6 @@ $ find /tmp/*/* -mtime +7 -type f -exec rmdir {} \;
 find /tmp/*/* -mtime +7 -type d -exec rmdir {} \;
 
 
-
 ## Secure linux history
 ## The bellow options will make the linux history with a timestamp, will immediately log the history and will log the history to syslog
 [bash]
@@ -215,6 +214,11 @@ EOF
 ## Cool way to keep your SSH session open
 #  Can be used in case there is an auto-session-terminate-logout implemented in the system 
 ping 127.0.0.1 >/dev/null 2>&1 &
+
+
+## Generate password for htpasswd with openssl
+#  This will ask for password to be entered for the specified $USERNAME and set the hashed password in /etc/nginx/htpasswd.users
+echo "$USERNAME:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users
 
 
 -------------------------------------------------------------------------------
