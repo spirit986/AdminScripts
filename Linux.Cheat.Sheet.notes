@@ -221,6 +221,10 @@ ping 127.0.0.1 >/dev/null 2>&1 &
 echo "$USERNAME:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users
 
 
+## Systemcd | Systemctl list all services
+systemctl list-units --type=service
+
+
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 --- GIT
