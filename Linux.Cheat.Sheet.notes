@@ -102,7 +102,7 @@ ls /etc/systemd/system/multi-user.target.wants/*.service
 ssh-keygen -lf pub.key
 
 
-## Resize an XFS root partition on the fly
+## Resize an XFS root partition on CentOS on the fly
 #https://stackoverflow.com/questions/38160794/how-to-resize-root-partition-online-on-xfs-filesystem
 1. Increase the disk size from the cloud platform
 2. Install cloud-utils-growpart if not present already
@@ -496,6 +496,10 @@ done
 -------------------------------------------------------------------------------
 --- VIM
 -------------------------------------------------------------------------------
+# Traversing text in inser mode
+# https://stackoverflow.com/questions/1737163/traversing-text-in-insert-mode
+
+
 # Save the file when you eddit without sudo
 [bash]
 $ :w !sudo tee %
