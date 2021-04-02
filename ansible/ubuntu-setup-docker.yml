@@ -1,0 +1,26 @@
+---
+- hosts: ubuntu
+  become: true
+  tasks:
+    - name: Setup Docker | Download the installer script
+      get_url:
+        url: https://releases.rancher.com/install-docker/20.10.sh
+        dest: /tmp
+        mode: 0755
+
+    - name: Setup Docker | Execute the Docker installer
+      shell: /tmp/20.10.sh
+
+    - name: Setup Docker | Make sure docker.service is enabled
+      systemd:
+        name: docker.service
+        state: started
+        enabled: yes
+
+    - name: Setup Docker | Add the user ansible to the docker group
+      user:
+        name: ansible
+        groups: docker
+        append: yes
+
+...
