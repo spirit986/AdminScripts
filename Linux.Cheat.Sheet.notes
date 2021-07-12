@@ -32,7 +32,7 @@ sed -i '' -e '$a\' file.txt
 
 
 ## The ultimate grep
-# -r Recusive, -n Display line number, -w Whole words, -i Ignore case, 
+# -r Recusive, -n Display line number, -w Whole words, -i Ignore case,
 #  -I Ignore binary
 grep -rnwiI /path/to/dir -e "StrIng to Search"
 
@@ -85,7 +85,7 @@ rsync -Wzvh --progress -e "ssh -p 9022" username@172.16.0.50:/media/shared/xvda.
 rsync -Wazvh -progress -e "ssh -p 9022" username@172.16.0.50:/media/ /destination
 
 # Copy files localy
-rsync 
+rsync
 
 
 ## Count number of processes per service
@@ -94,7 +94,7 @@ pidof httpd | wc -w #Will return the number of httpd processes running
 pgrep -c 'httpd|apache2'#This version is going to work on redhat/centos/suse AND ubuntu/debian systems
 
 
-## Linux list services on a SystemD host 
+## Linux list services on a SystemD host
 ls /etc/systemd/system/multi-user.target.wants/*.service
 
 
@@ -116,7 +116,7 @@ $ xfs_growfs -d /dev/xvda1
 
 
 ## How to use nc (netcat) instead of telnet
-#Success 
+#Success
 [bash]
 $ nc -zv server.com 5000
 Ncat: Version 7.50 ( https://nmap.org/ncat )
@@ -139,7 +139,7 @@ cat /proc/net/dev
 cat /etc/*release*
 
 
-## Bring up the interface using ifconfig and assign IP from a DHCP 
+## Bring up the interface using ifconfig and assign IP from a DHCP
 # Very usefull on simple systems that do not have ifup command
 ifconfig eth0 0.0.0.0 0.0.0.0 && dhclient
 
@@ -148,7 +148,7 @@ ifconfig eth0 0.0.0.0 0.0.0.0 && dhclient
 fulload() { dd if=/dev/zero of=/dev/null | dd if=/dev/zero of=/dev/null | dd if=/dev/zero of=/dev/null | dd if=/dev/zero of=/dev/null & }; fulload; read; killall dd
 
 
-## Find and list all files in a directory on a giben date 
+## Find and list all files in a directory on a giben date
 ## https://www.cyberciti.biz/faq/unix-linux-list-all-files-modified-on-given-date/
 find /storage/log/vmware -newermt 2018-09-06 ! -newermt 2018-09-07 -ls
 
@@ -156,7 +156,7 @@ find /storage/log/vmware -newermt 2018-09-06 ! -newermt 2018-09-07 -ls
 ## Apache2 list modules
 apachectl -t -D DUMP_MODULES
 apache2ctl -M
-  
+
 
 ## Regenerate a new initrd
 ## Take backup of the old first
@@ -164,27 +164,27 @@ mkinitrd /boot/initrd-latest.img $(uname -r)
 
 
 ## MTR
-### Cool way to check for packet loss between hops 
+### Cool way to check for packet loss between hops
 mtr -rwc 100 -i 0.5 -rw www.google.com
 mtr -rwc 100 -i 0.5 -rw 10.69.11.8
 
 
-## Systemd | List services that depend on another service 
+## Systemd | List services that depend on another service
 ##  In this example the services that depend by network-online.target
 $ systemctl show -p WantedBy network-online.target
 
 
-## PS1 Prompt 
-# Normal user 
+## PS1 Prompt
+# Normal user
 export PS1="\[\033[38;5;10m\]\n[\$?] \u@\h\[$(tput sgr0)\]\[\033[38;5;15m\]\n\w \\$ \[$(tput sgr0)\]"
 
-# Rooot user 
+# Rooot user
 export PS1="\[\033[38;5;9m\]\n[\$?] \u@\h\[$(tput sgr0)\]\[\033[38;5;15m\]\n\w \\$ \[$(tput sgr0)\]"
 
 
 ## Get octal file permissions
 ## Replace * with the relevant directory or the exact filename that you want to examine.
-stat -c "%a %n" * 
+stat -c "%a %n" *
 
 
 ## Delete foldes/folders older than X days
@@ -212,7 +212,7 @@ EOF
 
 
 ## Cool way to keep your SSH session open
-#  Can be used in case there is an auto-session-terminate-logout implemented in the system 
+#  Can be used in case there is an auto-session-terminate-logout implemented in the system
 ping 127.0.0.1 >/dev/null 2>&1 &
 
 
@@ -232,7 +232,7 @@ systemctl list-units --type=service
 ## Example of how to use Git branches
 ## https://stackoverflow.com/questions/4515644/git-checkout-does-not-change-anything
 [bash]
-$ git branch 
+$ git branch
 * master
   organize
 
@@ -260,7 +260,7 @@ git checkout -b BRANCH-NAME
 
 
 ## Git switch to a branch but set to track the changes from the same remote branch
-## I.E. Fix the DETACHED HEAD when checking out to a new branch 
+## I.E. Fix the DETACHED HEAD when checking out to a new branch
 ## Example:
 [bash]
 $ git clone https://github.com/phpipam/phpipam.git
@@ -382,7 +382,7 @@ example: mv file{,.$(date "+%FT%T")}
 uuidgen enp0s8
 c347febc-b549-456b-b415-477fa4b392e2
 
-## Configure the new interace 
+## Configure the new interace
 vim /etc/sysconfig/network-scripts/ifcfg-enp0s8
 TYPE=Ethernet
 PROXY_METHOD=none
@@ -505,7 +505,7 @@ done
 $ :w !sudo tee %
 [end]
 
-# VIM useful delete examples 
+# VIM useful delete examples
 `diw` to delete the current word and ciw to cut the current word.
 `de` is like `diw`, however it opens the opportunity to delete every next word just by pressing dot(.).
 `di(` delete within the current parents.
@@ -600,7 +600,7 @@ then
 syntax on
 colorscheme lightcomment
 EOF
-else 
+else
     echo ".vimrc has been detected. Edit the file manually and add the following lines:"
     echo
     echo "syntax on"
@@ -662,6 +662,12 @@ $ apt-cache madison docker-ce
 ## Prevent a package from upgrading when apt-get upgrade is run (example docker-ce)
 $ apt-mark hold docker-ce
 
+## Remove the hold 
+apt-mark unhold <package-name>
+
+## Show packages on hold
+apt-mark showhold
+
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -698,7 +704,7 @@ nmap –v –sA –n www.yourorg.com –oA firewallaudit.log
 ## Test with fragmented traffic
 nmap –sF –g 25 –oN firewallreport.log www.yourorg.com
 
-## Another example 
+## Another example
 nmap –sS --scan-delay 500 –f –rH firewallreport.txt www.yourorg.com
 
 
@@ -708,19 +714,19 @@ nmap –sS --scan-delay 500 –f –rH firewallreport.txt www.yourorg.com
 nmap -sP 10.0.0.0/24
 
 ## Full TCP port scan using with service version detection
-##  usually my first scan, I find T4 more accurate than T5 and still 
+##  usually my first scan, I find T4 more accurate than T5 and still
 ##  pretty quick.
 nmap -p 1-1024 -sV -sS -T4 domain.me
 
-## Prints verbose output, runs stealth syn scan, T4 timing, OS and version 
+## Prints verbose output, runs stealth syn scan, T4 timing, OS and version
 ##  detection + traceroute and scripts against target services.
 nmap -v -sS -A -T4 target
 
-##  Prints verbose output, runs stealth syn scan, T5 timing, OS and version 
+##  Prints verbose output, runs stealth syn scan, T5 timing, OS and version
 ##   detection + traceroute and scripts against target services.
 nmap -v -sS -A -T5 target
 
-## Prints verbose output, runs stealth syn scan, T5 timing, OS and 
+## Prints verbose output, runs stealth syn scan, T5 timing, OS and
 ##  version detection.
 nmap -v -sV -O -sS -T5 target
 
@@ -728,7 +734,7 @@ nmap -v -sV -O -sS -T5 target
 ##  detection + full port range scan.
 nmap -v -p 1-65535 -sV -O -sS -T4 target
 
-## Prints verbose output, runs stealth syn scan, T5 timing, OS and 
+## Prints verbose output, runs stealth syn scan, T5 timing, OS and
 #   version detection + full port range scan.
 nmap -v -p 1-65535 -sV -O -sS -T5 target
 
@@ -1014,7 +1020,7 @@ docker rm -vf $(docker ps -a -q)
 ## List images from a private docker registry V2
 curl -X GET https://myregistry:5000/v2/_catalog
 
-## List all tags from a private docker registry repository 
+## List all tags from a private docker registry repository
 curl -X GET https://myregistry:5000/v2/ubuntu/tags/list
 
 
@@ -1039,7 +1045,7 @@ password required pam_unix.so nullok obscure min=4 max=8 md5
 Remove nullok from above line so that it read as follows:
 password required pam_unix.so obscure min=4 max=8 md5
 
-## Save the file and exit to shell prompt. Open the next file 
+## Save the file and exit to shell prompt. Open the next file
 $ vim /etc/pam.d/common-password
 
 Find out line that read as follows:
@@ -1095,7 +1101,7 @@ When you get to the shell try editing /etc/passwd and /etc/shadow. Usually I jus
 ===============================================================================
 ## Linux Password Recovery
 ===============================================================================
-## Recovery 
+## Recovery
 ## Mount Remount
 mount -o remount,rw /
 
@@ -1105,9 +1111,9 @@ mount -o remount,rw /
 
 2. Select the kernel line and press e again to edit it.
 
-3. Append 
+3. Append
 [bash]
-init=/bin/bash 
+init=/bin/bash
 [end]
 .. at the end of line.
 
@@ -1506,7 +1512,7 @@ set vpn ip
 $ ansible-playbook user.yml --extra-vars "target=server_group_1" --list-hosts
 
 
-### Ansible ping against target host group from an inventory file 
+### Ansible ping against target host group from an inventory file
 ansible -i inventory okd-nonprod-master01 -m ping -o
 
 
@@ -1579,7 +1585,7 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
         update_cache: yes
         name: '*'
         state: latest
-        
+
     - name: Install usefull packages
       yum:
         name: "{{ packages }}"
@@ -1612,7 +1618,7 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
   become: true
   tasks:
     - name: Download the rancher docker installer script
-      get_url: 
+      get_url:
         url: https://releases.rancher.com/install-docker/19.03.5.sh
         dest: /tmp
         mode: 0755
@@ -1732,5 +1738,3 @@ https://blog.tomspirit.me/2020/05/linux-darkside-migration-aka-dd-over.html
 ## Regex for IP search/highlighting
 ## Works well with Notepad++ search
 \b(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(?1)){3}\b
-
-
