@@ -37,6 +37,13 @@ sed -i '' -e '$a\' file.txt
 grep -rnwiI /path/to/dir -e "StrIng to Search"
 
 
+## Filter out the comments from a file with grep
+# -o: prints only matched part of the line
+# first ^: beginning of the line
+# [^#]*: any character except # repeated zero or more times
+grep -o '^[^#]*' file
+
+
 ## Show listening ports and processes
 netstat -tulnp
 
@@ -662,7 +669,7 @@ $ apt-cache madison docker-ce
 ## Prevent a package from upgrading when apt-get upgrade is run (example docker-ce)
 $ apt-mark hold docker-ce
 
-## Remove the hold 
+## Remove the hold
 apt-mark unhold <package-name>
 
 ## Show packages on hold
@@ -1327,6 +1334,20 @@ rsslink VARCHAR(512) NOT NULL
 ===============================================================================
 ## NGINX
 ===============================================================================
+## Common NGINX headers
+
+## For CORS
+add_header Access-Control-Allow-Origin "domain.com";
+
+proxy_set_header        Host                    $http_host;
+proxy_set_header        X-Real-IP               $remote_addr;
+proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
+proxy_set_header        X-Forwarded-Proto       $scheme;
+proxy_set_header        X-Forwarded-Host        $http_host;
+proxy_set_header        X-Forwarded-Port        $remote_port;
+
+
+
 ## Nginx proxy default example
 upstream workers {
         least_conn;
@@ -1673,6 +1694,82 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
         state: restarted
 ...
 [end]
+
+
+
+===============================================================================
+...............................................................................
+...............................................................................
+...............................................................................
+===============================================================================
+## ELK | Elasticsearch
+===============================================================================
+### Check basic cluster info and version
+### Note: if "cluster_uuid" is missing there is no cluster
+$ curl -XGET 'http://elastic1.stag.project.loc:9200'
+{
+  "name" : "elastic1.stag.project.loc",
+  "cluster_name" : "project-staging",
+  "cluster_uuid" : "-ZbHAW4xTUOlOoENNyl_dw",
+  "version" : {
+    "number" : "7.15.0",
+    "build_flavor" : "default",
+    "build_type" : "deb",
+    "build_hash" : "79d65f6e357953a5b3cbcc5e2c7c21073d89aa29",
+    "build_date" : "2021-09-16T03:05:29.143308416Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.9.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+
+### Check cluster health (short info)
+$ curl -XGET 'http://elastic2.stag.project.loc:9200/_cluster/health?pretty'
+{
+  "cluster_name" : "project-staging",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 3,
+  "number_of_data_nodes" : 3,
+  "active_primary_shards" : 20,
+  "active_shards" : 40,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 100.0
+}
+
+
+### Check cluster state (long command)
+$ curl -XGET 'http://elastic2.stag.project.loc:9200/_cluster/state?pretty'
+
+
+### Check the shards allocation
+curl -XGET 'http://elastic1.stag.project.loc:9200/_cat/shards?v'
+index                                  shard prirep state   docs   store ip         node
+.apm-agent-configuration               0     p      STARTED    0    208b 10.0.16.30 elastic1.stag.project.loc
+.apm-agent-configuration               0     r      STARTED    0    208b 10.0.16.50 elastic3.stag.project.loc
+.kibana_7.15.0_001                     0     r      STARTED   86   2.1mb 10.0.16.30 elastic1.stag.project.loc
+.kibana_7.15.0_001                     0     p      STARTED   86   2.1mb 10.0.16.50 elastic3.stag.project.loc
+.kibana_task_manager_7.13.3_001        0     r      STARTED   10  66.4kb 10.0.16.51 elastic2.stag.project.loc
+.kibana_task_manager_7.13.3_001        0     p      STARTED   10  92.6kb 10.0.16.50 elastic3.stag.project.loc
+.kibana_7.13.3_001                     0     p      STARTED   73   2.1mb 10.0.16.51 elastic2.stag.project.loc
+.kibana_7.13.3_001                     0     r      STARTED   73   2.1mb 10.0.16.50 elastic3.stag.project.loc
+.ds-ilm-history-5-2021.09.10-000003    0     p      STARTED              10.0.16.51 elastic2.stag.project.loc
+.ds-ilm-history-5-2021.09.10-000003    0     r      STARTED              10.0.16.50 elastic3.stag.project.loc
+...
+...
+
+
+### Explain shard allocation issues (works only if there are shard allocaiton issues i.e. YELLOW or RED cluster state)
+curl -XGET 'http://elastic1.stag.project.loc:9200/_cluster/allocation/explain?pretty'
 
 
 
