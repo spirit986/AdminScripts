@@ -5,22 +5,22 @@
 ---
 Fix webserver permissions
 ```bash
-sudo chown -R www-data:dev-mysitenamehere .
+sudo chown -R www-data:www-data .
 sudo find . -type f -exec chmod 644 {} \;
 sudo find . -type d -exec chmod 755 {} \;
 ```
 
-Get the ip address
+Extract the IP address (for use in scripts)
 ```bash
 ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'
 ```
 
-Get the ip address, alternative
+(Alternative) Extract the IP address (for use in scripts)
 ```bash
 ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
 ```
 
-Update /etc/hosts with the IP/HOSTNAME of the server
+Update `/etc/hosts` with the IP/HOSTNAME of the server
 ```bash
 IPADDR=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
 ```
@@ -31,13 +31,13 @@ echo "" >> file.txt
 sed -i '' -e '$a\' file.txt
 ```
 
-The ultimate grep
+The ultimate `grep`
 ```bash
 # -r Recusive, -n Display line number, -w Whole words, -i Ignore case, -I Ignore binary
 grep -rnwiI /path/to/dir -e "Strng to Search"
 ```
 
-Filter out the comments from a file with grep
+Filter out the comments from a file with `grep`
 ```bash
 # -o: prints only matched part of the line
 # first ^: beginning of the line
@@ -66,7 +66,7 @@ netstat -antu | grep ':80\|:443' | grep -v LISTEN | awk '{print $5}' | cut -d: -
 netstat -antu | grep -v LISTEN | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn
 ```
 
-Filtering with awk
+Filtering with `awk`
 ```bash
 cat /var/log/toptal/access.log | awk -F \" '{print $6}' | sort -n | uniq -c | grep -v - | sort -rn | head
 ```
@@ -76,7 +76,7 @@ Check top outgoung connecitons
 netstat -nputw | awk '{print $5}' | cut -d: -f1 | sort | uniq -c
 ```
 
-DU (check disc usage)
+`du` (check disc usage)
 ```bash
 # Current Directory
 du -schx
@@ -88,7 +88,7 @@ du -ch --max-depth=1 /
 du -sm * | sort -rn
 ```
 
-NCDU - a smarter way to check disk usage
+`ncdu` - a smarter way to check disk usage
 ```bash
 ncdu -rx /
 ```
@@ -103,7 +103,7 @@ Get the key based on a fingerprint
 ssh-keygen -lf pub.key
 ```
 
-Rsync crash course
+`Rsync` crash course
 ```bash
 # Copy a single file over SSH that listens on port 9022 on the remote machine also show a progress bar
 rsync -Wzvh --progress -e "ssh -p 9022" username@172.16.0.50:/media/shared/xvda.vmdk /mnt/d/VMs/
@@ -124,12 +124,12 @@ pidof httpd | wc -w #Will return the number of httpd processes running
 pgrep -c 'httpd|apache2'#This version is going to work on redhat/centos/suse AND ubuntu/debian systems
 ```
 
-List services on a Systemd host
+List services on a `systemd` host
 ```bash
 ls /etc/systemd/system/multi-user.target.wants/*.service
 ```
 
-Systemd | Systemctl list all services
+`Systemd` | `Systemctl` list all services
 ```bash
 systemctl list-units --type=service
 ```
@@ -144,7 +144,7 @@ Get the linux verion / release
 cat /etc/*release*
 ```
 
-Bring up the interface using ifconfig and assign IP from a DHCP
+Bring up the interface using `ifconfig` and assign IP from a DHCP
 ```bash
 ## Very usefull on simple systems that do not have ifup command
 ifconfig eth0 0.0.0.0 0.0.0.0 && dhclient
@@ -186,7 +186,7 @@ Systemd | List services that depend on another service
 $ systemctl show -p WantedBy network-online.target
 ```
 
-Customize the PS1 Prompt
+Customize the `PS1` Prompt
 ```bash
 # Normal user
 export PS1="\[\033[38;5;10m\]\n[\$?] \u@\h\[$(tput sgr0)\]\[\033[38;5;15m\]\n\w \\$ \[$(tput sgr0)\]"
@@ -323,9 +323,10 @@ git diff origin/master..HEAD
 
 # Exclude directories/files with:
 # --exclude='dir1'
+```
 
-
-## CREATING ARCHIVES
+Creating archives
+```bash
 # Creating a GZip archive
 tar -czvf file.tar.gz /path/to/dir/
 
@@ -335,16 +336,20 @@ tar -cjvf file.tar.bz2 /path/to/dir/
 # Compress a filename
 tar -czvf file.tar.gz /path/to/dir/filename
 
+```
 
-## EXTRACTING ARCHIVES
+Extracting archives
+```bash
 # For GZip
 tar -xzvf file.tar.gz -C /path/to/destination/dir
 
 # For BZip
 tar -xjvf file.tar.bz2 -C /path/to/destination/dir
 
+```
 
-## LISTING ARCHIVES
+Listing archives
+```bash
 # For GZip
 tar -tzvf file.tar.gz
 
@@ -407,9 +412,9 @@ reboot
 
 
 ---
-##### How to use nc (netcat) instead of telnet
+##### How to use `nc` (netcat) instead of `telnet`
 
-When connection is successfull
+Successfull connection example
 ```bash
 $ nc -zv server.com 5000
 Ncat: Version 7.50 ( https://nmap.org/ncat )
@@ -417,7 +422,7 @@ Ncat: Connected to 10.65.1.85:5000.
 Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.
 ```
 
-When connection fails
+Failed connection example
 ```bash
 $ nc -z server.com 5001
 [root@worker01 ~]# nc -v server.com 5001
@@ -471,7 +476,7 @@ mv file{,.$(date "+%FT%T")}
 
 ---
 ##### Generate UUID for device
-When an interface is new and apropriate configuration files need to be created in `/etc/sysconfig/network-scripts/`
+When an interface is new an apropriate configuration files need to be created in `/etc/sysconfig/network-scripts/`
 ```bash
 ## Generate interface UUID (examole if the new interface is enp0s8)
 uuidgen enp0s8
@@ -504,7 +509,7 @@ DNS2=
 
 
 ---
-##### Create user and give all access
+##### Script to create a user and give all access
 You still need to add password in the end
 ```bash
 sudo su -
@@ -527,7 +532,7 @@ passwd $USERNAME
 
 ---
 ##### Virtual hardware hot-add scripts
-I used these for when administering the VMware infra for the VMs to avoid restarting
+I used these when administering the VMware infra for the VMs to avoid restarting
 
 RAM hot-add script
 ```bash
@@ -593,17 +598,18 @@ done
 
 ---
 ##### VIM
+Cheatsheet
+
+**Traversing text in insert mode**
+https://stackoverflow.com/questions/1737163/traversing-text-in-insert-mode
+
+Save the file when you accidentaly edit without sudo
 ```bash
-# Traversing text in inser mode
-# https://stackoverflow.com/questions/1737163/traversing-text-in-insert-mode
-
-
-# Save the file when you eddit without sudo
-[bash]
 $ :w !sudo tee %
-[end]
+```
 
-# VIM useful delete examples
+**VIM useful delete examples**
+```bash
 `diw` to delete the current word and ciw to cut the current word.
 `de` is like `diw`, however it opens the opportunity to delete every next word just by pressing dot(.).
 `di(` delete within the current parents.
@@ -616,30 +622,36 @@ $ :w !sudo tee %
 `ci"` cut the word inside the quotes.
 `ci(` cut the word in the parents.
 `C` cut the rest of the line and enter INSERT MODE. This is very useful for cut and paste.
+```
 
-# VIM Miscellaneous useful commands
+**VIM Miscellaneous useful commands**
+```bash
 `zz` Scroll down the screen to make the current line appear in the middle. Very useful to put some chunk of code in focus.
 `%` finds and moves the cursor to the matching parentheses.
 `:%TOhtml` Creates HTML version of the current document. (Try it, it is very useful).
 `vim http://site.com/` Vim can also open up URLs assuming they go directly to static HTML files.
+```
 
-# VIM Search and replace
-In its basic form, it is the `:substitute` command or :s for short that searches a text pattern and replaces it with a string. The command has many options and these are the most commonly used ones.
-
+**VIM Search and replace**
+In its basic form, it is the `:substitute` command or `:s` for short that searches a text pattern and replaces it with a string. The command has many options and these are the most commonly used ones.
+```bash
 `:%s/something/something_else/g` Find the word something and replace it with something_else in the entire document.
 `:s/something/something_else/g` Similarly like the before command. This one just replaces in the current line only.
 `:%s/something/something_else/gc` Note the c. It replaces everything but asks for confirmation first.
 `:%s/\<something\>/something_else/gc` Changes whole words exactly matching something with something_else but ask for confirmation first.
 `:%s/SomeThing/something_else/gic` Here the i flag is used for case insensitive search. And the c flag for confirmation.
+```
 
-# VIM Comment out blocks of code
+**VIM Comment out blocks of code**
+```bash
 Enter Blockwise visual mode with CTRL+V and mark the block you wish to comment.
 Press capital I and enter the comment string at the beginning of the line (# for bash, or // for C++ etc..)
 Press ESC twice and all the lines will be commented out.
 ```
 
 ###### VIM Comments fix
-#abe6f2
+Normally the comments are dark blue on most terminals which makes it really hard to read them. The color #abe6f2 is light blue and much easyer to read.
+
 From: http://www.color-hex.com/
 
 You can do it manually with this command:
@@ -715,7 +727,7 @@ chmod +x lightcomment.sh
 
 ---
 ##### `netstat` How to filter out the unique entries from a netstat output
-The netstat file looked like this:
+Example netstat output
 ```
   ...
   ...
@@ -739,9 +751,8 @@ awk '{print $3}' 10.137.0.41.ip.log # Print the 3rd row 10.69.11.238:1433
 
 ---
 ##### `apt-get`
+Source: https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/
 ```bash
-# https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/
-
 ## List All Available Packages
 apt-cache pkgnames
 
@@ -941,16 +952,13 @@ systemctl show -p WantedBy network-online.target
 
 ---
 ##### CentOS specific stuff
+Things to do and to install after a fresh CentOS install
 ```bash
-## Things to do and to install after a fresh CentOS install
 # In case there is no networking
-[bash]
 yum install -y epel-release
 yum makecache
 yum install vim nano curl wget tcpdump git net-tools bash-completion openssl-devel  bind-utils httpd-tools screen nethogs
-[end]
 
-[bash]
 vi /etc/susconfig/network-scripts/ifcfg-enp0s3
 ONBOOT=yes
 
@@ -962,9 +970,10 @@ yum install -y openssh
 systemctl start sshd.service
 systemctl enable sshd.service
 [end]
+```
 
-
-## CentOS7 Static IP
+CentOS7 set static IP
+```bash
 $ vim /etc/sysconfig/network-scripts/ifcfg-IFNAME
 IPADDR=192.168.1.200
 NETMASK=255.255.255.0
@@ -974,8 +983,10 @@ DNS2=1.1.1.1
 DNS3=8.8.4.4
 
 $ systemctl restart network
+```
 
-## CentOS7 Static Route
+CentOS7 set static Route
+```bash
 $ vim /etc/sysconfig/network-scripts/route-IFNAME
 #SOURCE          GW         OPTIONAL
 15.15.0.0/24 via 10.1.1.110 dev enp0s3
@@ -985,6 +996,8 @@ $ systemctl restart network
 
 ---
 ##### Disable/Enable blank passwords in PAM
+This is very important for advanced passwrod recovery. See the password recovery examples bellow.
+
 Source: https://www.cyberciti.biz/tips/linux-or-unix-disable-null-passwords.html
 
 ```bash
@@ -1047,7 +1060,36 @@ Usually I just blank out password field for the `root` user then reboot. This ma
 
 
 ---
-##### Confert Amazon AMI to VMware image
+##### Linux Password Recovery
+
+Mount Remount the /
+`mount -o remount,rw /`
+
+Using GRUB to invoke bash | https://wiki.archlinux.org/index.php/Reset_lost_root_password
+1. Select the appropriate boot entry in the GRUB menu and press `e` to edit the line.
+2. Select the kernel line and press e again to edit it.
+3. Append `init=/bin/bash`  .. at the end of line.
+4. Press `Ctrl-X` to boot (this change is only temporary and will not be saved to your `menu.lst`). After booting you will be at the bash prompt.
+
+5. Your root file system is mounted as readonly now, so remount it as read/write
+`mount -n -o remount,rw /`
+
+6. Use the `passwd` command to create a new root password.
+7. Reboot by typing reboot -f and do not lose your password again!
+
+
+---
+##### Linux | Boot hangs at: `random nonblocking pool is initialized`
+Update the GRUB parameter with:
+`GRUB_CMDLINE_LINUX_DEFAULT="nomodeset"`
+
+`vim /etc/default/grub`
+.. or
+`/etc/init/grub`
+
+
+---
+##### Convert Amazon AMI to VMware image
 https://serverfault.com/questions/319949/convert-amazon-ami-to-vmware-image
 
 If you still have access to the instance, I believe the simplest way would be using `dd` to copy it off to a raw file (possibly just directly piping over SSH to the destination system like in ssh your.ec2-system `dd if=/dev/sdh bs=1M | gzip' | gunzip | dd of=/tmp/ec2-image.raw`) and then using something like qemu-img to convert the raw image to a VMDK file.
@@ -1075,35 +1117,6 @@ ssh -i privkey.pem ubuntu@10.212.31.158 'sudo dd if=/dev/xvdb bs=1M | gzip' | gu
 # QEMU confert the raw images of Nomad
 qemu-img convert -f raw -O vmdk xvda.raw xvda.vmdk
 ```
-
-
----
-##### Linux Password Recovery
-
-Mount Remount the /
-`mount -o remount,rw /`
-
-Using GRUB to invoke bash | https://wiki.archlinux.org/index.php/Reset_lost_root_password
-1. Select the appropriate boot entry in the GRUB menu and press `e` to edit the line.
-2. Select the kernel line and press e again to edit it.
-3. Append `init=/bin/bash`  .. at the end of line.
-4. Press `Ctrl-X` to boot (this change is only temporary and will not be saved to your `menu.lst`). After booting you will be at the bash prompt.
-
-5. Your root file system is mounted as readonly now, so remount it as read/write
-`mount -n -o remount,rw /`
-
-6. Use the `passwd` command to create a new root password.
-7. Reboot by typing reboot -f and do not lose your password again!
-
-
----
-##### Boot hangs at: `random nonblocking pool is initialized`
-Update the GRUB parameter with:
-`GRUB_CMDLINE_LINUX_DEFAULT="nomodeset"`
-
-`vim /etc/default/grub`
-.. or
-`/etc/init/grub`
 
 
 ---
