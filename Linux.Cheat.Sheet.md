@@ -228,9 +228,25 @@ echo "$USERNAME:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users
 
 ##### How to set a private key for the `git ssh` command
 Original source: https://superuser.com/questions/232373/how-to-tell-git-which-private-key-to-use
+
+The **old way** is to use the `GIT_SSH_COMMAND` variable
 ```bash
 GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_example" git clone git@github.com:example/example.git
 ```
+
+The new and better way is to use the `core.sshCommand` internal `git` variable.
+
+So for a new repo to clone:
+```bash
+git clone -c "core.sshCommand=ssh -i ~/.ssh/id_rsa_example -F /dev/null" git@github.com:example/example.git
+```
+
+For an existing local repo just use `git config` to alter the `core.sshCommand` varialbe:
+```bash
+git config core.sshCommand "ssh -i ~/.ssh/id_rsa_example -F /dev/null"
+```
+
+Local repo configuration is saved within: `.git/config`
 
 
 ##### How to use Git branches (Example)
