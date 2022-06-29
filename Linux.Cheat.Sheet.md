@@ -226,6 +226,13 @@ echo "$USERNAME:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users
 ## GIT
 ---
 
+##### How to set a private key for the `git ssh` command
+Original source: https://superuser.com/questions/232373/how-to-tell-git-which-private-key-to-use
+```bash
+GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_example" git clone git@github.com:example/example.git
+```
+
+
 ##### How to use Git branches (Example)
 Original source: https://stackoverflow.com/questions/4515644/git-checkout-does-not-change-anything
 ```bash
