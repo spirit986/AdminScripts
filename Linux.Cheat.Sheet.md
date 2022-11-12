@@ -1585,19 +1585,19 @@ Also another user mentios adding `ProxyPreserveHost On` to the proxy instance on
 ---
 ##### Linux migration - Online Rsync
 Migrated:
-https://blog.tomspirit.me/2020/05/linux-migration-from-anywhere-to.html
+http://tomspirit.me/blog/posts/linux-migration-anywhere-to-anywhere/
 
 
 ---
 ##### Linux migration - Offline Rsync
 Migrated:
-https://blog.tomspirit.me/2020/05/linux-ec2-to-on-premise-migration.html
+http://tomspirit.me/blog/posts/linux-ec2-to-on-premise-migration/
 
 
 ---
 ##### Convert a linux manually from AWS to VMware
 Migrated:
-https://blog.tomspirit.me/2020/05/linux-darkside-migration-aka-dd-over.html
+http://tomspirit.me/blog/posts/linux-the-darkside-migration-method/
 
 
 
