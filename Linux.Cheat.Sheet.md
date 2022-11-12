@@ -383,7 +383,7 @@ tar -tjvf file.tar.bz2
 
 ---
 ## GPG
-##### After a new install
+#### After a new install
 Generate a new key, secret and public. Make sure to use a strong password for the secret key. The password is the weakest poing of this system.
 ```
 gpg --full-generate-key
@@ -409,7 +409,7 @@ uid           [ultimate] Jon Doe (Some description) <your.name@email.com>
 ssb   rsa4096 2022-10-01 [E]
 ```
 
-##### Backup and restore operations
+#### Backup and restore operations
 **Some general considerations**
 
 When exporting, by default the `--export` option will export only the public key. To export the secret key as well use the `--export-secret-key` option.
