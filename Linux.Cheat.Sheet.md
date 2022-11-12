@@ -226,7 +226,7 @@ echo "$USERNAME:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users
 ## GIT
 ---
 
-##### How to set a private key for the `git ssh` command
+#### How to set a private key for the `git ssh` command
 Original source: https://superuser.com/questions/232373/how-to-tell-git-which-private-key-to-use
 
 The **old way** is to use the `GIT_SSH_COMMAND` variable
@@ -249,7 +249,7 @@ git config core.sshCommand "ssh -i ~/.ssh/id_rsa_example -F /dev/null"
 Local repo configuration is saved within: `.git/config`
 
 
-##### How to use Git branches (Example)
+#### How to use Git branches (Example)
 Original source: https://stackoverflow.com/questions/4515644/git-checkout-does-not-change-anything
 ```bash
 git branch
@@ -267,7 +267,7 @@ organize
 git pull origin networking
 ```
 
-##### Git fetch all branches before checkout
+#### Git fetch all branches before checkout
 ```bash
 # Clone
 git clone git@github.com:greenplum-db/gpdb.git
@@ -280,7 +280,7 @@ git checkout -b BRANCH-NAME
 ```
 
 
-##### Git switch to a branch but set to track the changes from the same remote branch
+#### Git switch to a branch but set to track the changes from the same remote branch
 A.K.A. Fix the DETACHED HEAD when checking out to a new branch
 
 **Example:**
@@ -471,7 +471,7 @@ Your decision? 5
 ## Short tutorials and scripts
 ---
 ---
-##### Resize an XFS root partition on CentOS on the fly
+#### Resize an XFS root partition on CentOS on the fly
 
 Original source: https://stackoverflow.com/questions/38160794/how-to-resize-root-partition-online-on-xfs-filesystem
 
@@ -482,7 +482,7 @@ Original source: https://stackoverflow.com/questions/38160794/how-to-resize-root
 
 
 ---
-##### Move a folder to a separate partition
+#### Move a folder to a separate partition
 In the example bellow we will move /var/log on a JIRA server to a separate partition.
 ```bash
 # Fin all processes using files in /var/log and stop them
@@ -520,7 +520,7 @@ reboot
 
 
 ---
-##### How to use `nc` (netcat) instead of `telnet`
+#### How to use `nc` (netcat) instead of `telnet`
 
 Successfull connection example
 ```bash
@@ -540,7 +540,7 @@ Ncat: Connection refused.
 
 
 ---
-##### Secure the linux history
+#### Secure the linux history
 The bellow options will make the linux history with a timestamp, will immediately log the history and will log the history to syslog
 
 ```bash
@@ -558,7 +558,7 @@ EOF
 
 
 ---
-##### Cool timestamp function
+#### Cool timestamp function
 Can be used in scripts with #date 
 https://www.linode.com/docs/tools-reference/tools/use-the-date-command-in-linux/
 ```bash
@@ -583,7 +583,7 @@ mv file{,.$(date "+%FT%T")}
 
 
 ---
-##### Generate UUID for device
+#### Generate UUID for device
 When an interface is new an apropriate configuration files need to be created in `/etc/sysconfig/network-scripts/`
 ```bash
 ## Generate interface UUID (examole if the new interface is enp0s8)
@@ -617,7 +617,7 @@ DNS2=
 
 
 ---
-##### Script to create a user and give all access
+#### Script to create a user and give all access
 You still need to add password in the end
 ```bash
 sudo su -
@@ -639,7 +639,7 @@ passwd $USERNAME
 
 
 ---
-##### Virtual hardware hot-add scripts
+#### Virtual hardware hot-add scripts
 I used these when administering the VMware infra for the VMs to avoid restarting
 
 RAM hot-add script
@@ -705,7 +705,7 @@ done
 ```
 
 ---
-##### VIM
+#### VIM
 Cheatsheet
 
 **Traversing text in insert mode**
@@ -757,7 +757,7 @@ Press capital I and enter the comment string at the beginning of the line (# for
 Press ESC twice and all the lines will be commented out.
 ```
 
-###### VIM Comments fix
+#### VIM Comments fix
 Normally the comments are dark blue on most terminals which makes it really hard to read them. The color #abe6f2 is light blue and much easyer to read.
 
 From: http://www.color-hex.com/
@@ -834,7 +834,7 @@ chmod +x lightcomment.sh
 
 
 ---
-##### `netstat` How to filter out the unique entries from a netstat output
+#### `netstat` How to filter out the unique entries from a netstat output
 Example netstat output
 ```
   ...
@@ -858,7 +858,7 @@ awk '{print $3}' 10.137.0.41.ip.log # Print the 3rd row 10.69.11.238:1433
 
 
 ---
-##### `apt-get`
+#### `apt-get`
 Source: https://www.tecmint.com/useful-basic-commands-of-apt-get-and-apt-cache-for-package-management/
 ```bash
 ## List All Available Packages
@@ -895,7 +895,7 @@ apt-mark showhold
 
 
 ---
-##### `dpkg`
+#### `dpkg`
 ```bash
 ## List Installed on older debian distros
 dpkg --get-selections
@@ -910,7 +910,7 @@ dpkg -l
 
 
 ---
-##### `nmap`
+#### `nmap`
 ```bash
 # Something that REALLY works
 # https://security.stackexchange.com/questions/36198/how-to-find-live-hosts-on-my-network
@@ -965,7 +965,7 @@ nmap -v -p 1-65535 -sV -O -sS -T5 target
 
 
 ---
-##### `curl`
+#### `curl`
 ```bash
 curl -LI google.com #Follow redirects and get the header only
 curl -o website https://google.com #Save output to file
@@ -974,7 +974,7 @@ curl -O https://domain.com/file.zip #Download files
 
 
 ---
-##### Remove/Uninstall `cloudinit`
+#### Remove/Uninstall `cloudinit`
 ```bash
 [bash]
 $ echo 'datasource_list: [ None ]' | tee /etc/cloud/cloud.cfg.d/90_dpkg.cfg
@@ -1004,7 +1004,7 @@ Resize LVM with XFS
 
 
 ---
-##### Test Disk Read and Write speed
+#### Test Disk Read and Write speed
 Some examples on disk benchmarking
 ```bash
 ## Disk Read/Write speed test with `dd`
@@ -1026,14 +1026,14 @@ sync; dd if=/dev/zero of=/efs bs=1M count=4096000; sync
 
 
 ---
-##### Disable root login the friendly way
+#### Disable root login the friendly way
 ```
 no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please login as the user \"ubuntu\" rather than the user \"root\".';echo;sleep 10" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Jyv9T14/XraaCUeFZ1xrQsTge9PydO+ypkSdQI4qrnPFJBBBoX0UtxvQYNOaqrxEHQ7wxVrIj7Uwop7D8/DJgJpZHmmHU0PW5uHl7z4m0ofdOdzlx+UyD/n1yh//73E+OhN4x4y+Ann/dkRFqc095kqA6sVZNSbgJPX+iUpB06WjIQXjOYD3Pvy9lXQzghszRt2hWbN8cfYnJ6CLacPfkeGOS/p2wKJ4hkjSr9vfm4MCKDgKIopizMC78tfNxQNkWrxgv78Mg+qgescM83O8CM7uJpflTT+HySutnmR0R+tst4BCdFTV8KsB4ZjNTCkoC5RLRF7FWEt+FmjuPtX/ name@email.com
 ```
 
 
 ---
-##### Ubuntu - Things to do and to install after a fresh Ubuntu install
+#### Ubuntu - Things to do and to install after a fresh Ubuntu install
 ```bash
 apt update && apt upgrade -y
 apt install htop nmon nethogs screen vim mc tcpdump net-tools bash-completion
@@ -1059,7 +1059,7 @@ systemctl show -p WantedBy network-online.target
 
 
 ---
-##### CentOS specific stuff
+#### CentOS specific stuff
 Things to do and to install after a fresh CentOS install
 ```bash
 # In case there is no networking
@@ -1103,7 +1103,7 @@ $ systemctl restart network
 
 
 ---
-##### Disable/Enable blank passwords in PAM
+#### Disable/Enable blank passwords in PAM
 This is very important for advanced passwrod recovery. See the password recovery examples bellow.
 
 Source: https://www.cyberciti.biz/tips/linux-or-unix-disable-null-passwords.html
@@ -1146,7 +1146,7 @@ auth sufficient /lib/security/pam_unix.so likeauth
 
 
 ---
-##### When Single User Mode is not working
+#### When Single User Mode is not working
 Single user mode workaroud | http://www.noah.org/wiki/Single_User_Mode
 
 Once you are onto the GRUB menu:
@@ -1168,7 +1168,7 @@ Usually I just blank out password field for the `root` user then reboot. This ma
 
 
 ---
-##### Linux Password Recovery
+#### Linux Password Recovery
 
 Mount Remount the /
 `mount -o remount,rw /`
@@ -1187,7 +1187,7 @@ Using GRUB to invoke bash | https://wiki.archlinux.org/index.php/Reset_lost_root
 
 
 ---
-##### Linux | Boot hangs at: `random nonblocking pool is initialized`
+#### Linux | Boot hangs at: `random nonblocking pool is initialized`
 Update the GRUB parameter with:
 `GRUB_CMDLINE_LINUX_DEFAULT="nomodeset"`
 
@@ -1197,7 +1197,7 @@ Update the GRUB parameter with:
 
 
 ---
-##### Convert Amazon AMI to VMware image
+#### Convert Amazon AMI to VMware image
 https://serverfault.com/questions/319949/convert-amazon-ami-to-vmware-image
 
 If you still have access to the instance, I believe the simplest way would be using `dd` to copy it off to a raw file (possibly just directly piping over SSH to the destination system like in ssh your.ec2-system `dd if=/dev/sdh bs=1M | gzip' | gunzip | dd of=/tmp/ec2-image.raw`) and then using something like qemu-img to convert the raw image to a VMDK file.
@@ -1228,7 +1228,7 @@ qemu-img convert -f raw -O vmdk xvda.raw xvda.vmdk
 
 
 ---
-##### DOCKER
+#### DOCKER
 ```bash
 # Get basic servce information
 service docker status
@@ -1284,7 +1284,7 @@ curl -X GET https://myregistry:5000/v2/ubuntu/tags/list
 
 
 ---
-##### Basic site-to-site VPN with OpenSwan
+#### Basic site-to-site VPN with OpenSwan
 Example configuration files:
 ```bash
 vim /etc/ipsec.d/myconn1.conf
@@ -1327,7 +1327,7 @@ ipsec auto --status | grep myconn1
 
 
 ---
-##### `iptables`
+#### `iptables`
 
 Run the following. It'll insert the rule at the top of your iptables and will allow all traffic unless subsequently handled by another rule.
 ```bash
@@ -1377,7 +1377,7 @@ iptables -t nat -L
 
 
 ---
-##### MYSQL
+#### MYSQL
 ```bash
 ## CREATE Database
 create database dbname;
@@ -1415,7 +1415,7 @@ rsslink VARCHAR(512) NOT NULL
 
 
 ---
-##### NGINX
+#### NGINX
 ```
 ## Common NGINX headers
 
@@ -1466,7 +1466,7 @@ server {
 
 
 ---
-##### VyOS
+#### VyOS
 VyOS VPN Template
 ```
 set vpn ipsec esp-group esp_settings_1 compression 'disable'
@@ -1491,7 +1491,7 @@ set vpn ip
 
 
 ---
-##### ELK | Elasticsearch
+#### ELK | Elasticsearch
 Check basic cluster info and version
 **Note:** If `cluster_uuid` is missing there is no cluster
 ```bash
@@ -1567,7 +1567,7 @@ curl -XGET 'http://elastic1.stag.project.loc:9200/_cluster/allocation/explain?pr
 
 
 ---
-##### WORDPRESS
+#### WORDPRESS
 When a wordpress site is hosted with NGINX PROXY -> APACHE -> wordpress | https://stackoverflow.com/questions/37149842/redirect-to-127-0-0-1-when-access-a-wordpress-hosted-with-apache-and-nginx-in-pr
 
 Add the following into `wp-config.php` bellow `WP_HOME` and `WP_SITEURL` (just these two is not enough)
@@ -1583,19 +1583,19 @@ Also another user mentios adding `ProxyPreserveHost On` to the proxy instance on
 
 
 ---
-##### Linux migration - Online Rsync
+#### Linux migration - Online Rsync
 Migrated:
 http://tomspirit.me/blog/posts/linux-migration-anywhere-to-anywhere/
 
 
 ---
-##### Linux migration - Offline Rsync
+#### Linux migration - Offline Rsync
 Migrated:
 http://tomspirit.me/blog/posts/linux-ec2-to-on-premise-migration/
 
 
 ---
-##### Convert a linux manually from AWS to VMware
+#### Convert a linux manually from AWS to VMware
 Migrated:
 http://tomspirit.me/blog/posts/linux-the-darkside-migration-method/
 
