@@ -381,6 +381,91 @@ tar -tjvf file.tar.bz2
 ```
 
 
+---
+## GPG
+##### After a new install
+Generate a new key, secret and public. Make sure to use a strong password for the secret key. The password is the weakest poing of this system.
+```
+gpg --full-generate-key
+```
+
+List public and secret keys:
+```
+$ gpg --list-public-keys
+/home/user/.gnupg/pubring.kbx
+----------------------------
+pub   rsa4096 2022-10-01 [SC]
+      C509669A4C0679244EF8500996541D6910215E32
+uid           [ultimate] Jon Doe (Some description) <your.name@email.com>
+sub   rsa4096 2022-10-01 [E]
+
+
+$ gpg --list-secret-keys
+/home/user/.gnupg/pubring.kbx
+----------------------------
+sec   rsa4096 2022-10-01 [SC]
+      C509669A4C0679244EF8500996541D6910215E32
+uid           [ultimate] Jon Doe (Some description) <your.name@email.com>
+ssb   rsa4096 2022-10-01 [E]
+```
+
+##### Backup and restore operations
+**Some general considerations**
+
+When exporting, by default the `--export` option will export only the public key. To export the secret key as well use the `--export-secret-key` option.
+Default export format is binary which is considered the safer alternative. To export to an ASCII readable format (for use in an applicaiton for example) you can use the `--armor` option in the export command.
+
+**Export** only your public key so that you can give it to someone else:
+```
+gpg --output YOUR_KEY_NAME.public.pgp --export-key YOUR_PUBLIC_KEY_ID
+```
+
+**Backup** both of your keys(secret and public), for use with importing to a new system. DO NOT GIVE THIS FILE TO ANYONE ELSE.
+```
+gpg --output YOUR_KEY_NAME.secret.pgp --export-secret-key --export-options export-backup YOUR_SECRET_KEY_ID
+```
+
+**Verify** the backup. The bellow command will do only a dry run of an import which will allow you to list the contents of your backup.
+```
+$ gpg --import --import-options show-only  YOUR_KEY_NAME.secret.pgp
+
+sec   rsa4096 2022-10-01 [SC]
+      C509669A4C0679244EF8500996541D6910215E32
+uid                      Jon Doe (Some description) <your.name@email.com>
+ssb   rsa4096 2022-10-01 [E]
+```
+
+Import exported keys to a new system.
+
+**Restore/Import** exported key with the `restore` option
+```
+$ gpg --import --import-options restore YOUR_KEY_NAME.secret.pgp
+```
+
+After importing your keys you can check them in your keyring but they will be listed as `[ unknown ]`. That's because they need to be marked as trusted keys. To update the trust information you need to use the `--edit-key` which will present a meny for most of the key management related tasks. The `trust` option will mark the key as trusted.
+```
+gpg --edit-key C509669A4C0679244EF8500996541D6910215E32
+gpg> trust
+
+sec  rsa4096/96541D6910215E32
+     created: 2022-10-01  expires: never       usage: SC
+     trust: unknown       validity: unknown
+ssb  rsa4096/B07D77C42CC17346
+     created: 2022-10-01  expires: never       usage: E
+[ unknown] (1). Jon Doe (Some description) <your.name@email.com>
+
+Please decide how far you trust this user to correctly verify other users' keys
+(by looking at passports, checking fingerprints from different sources, etc.)
+
+  1 = I don't know or won't say
+  2 = I do NOT trust
+  3 = I trust marginally
+  4 = I trust fully
+  5 = I trust ultimately
+  m = back to the main menu
+
+Your decision? 5
+```
 
 ---
 ## Short tutorials and scripts
