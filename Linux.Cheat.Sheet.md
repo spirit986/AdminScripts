@@ -444,7 +444,7 @@ $ gpg --import --import-options restore YOUR_KEY_NAME.secret.pgp
 
 After importing your keys you can check them in your keyring but they will be listed as `[ unknown ]`. That's because they need to be marked as trusted keys. To update the trust information you need to use the `--edit-key` which will present a meny for most of the key management related tasks. The `trust` option will mark the key as trusted.
 ```
-gpg --edit-key C509669A4C0679244EF8500996541D6910215E32
+$ gpg --edit-key C509669A4C0679244EF8500996541D6910215E32
 gpg> trust
 
 sec  rsa4096/96541D6910215E32
@@ -465,6 +465,129 @@ Please decide how far you trust this user to correctly verify other users' keys
   m = back to the main menu
 
 Your decision? 5
+gpg> save
+```
+
+#### Encryption operations
+**Encrypt file** to one recipient using his public key. This will write to a default filename, in this case `message.txt.gpg`. You can change the output at any time with the `--output` option.
+```
+$ gpg --encrypt --recipient RECEPIENT-PUB-KEY message.txt.gpg
+```
+
+**Encrypt file** to one recipient using his public key and **sign** the file with your private key. This is when you need to confirm your identity when sending an encrypted message.
+```
+$ gpg --encrypt --sign --recipient RECEPIENT-PUB-KEY message.txt.gpg
+```
+
+Encrypt for multiple recipients:
+```
+$ gpg --encrypt -r KEY1 -r KEY2 -r KEY3 file.txt
+```
+
+Disable GPG's compression. It is on by default but you may want to disable it if the file is large or already compressed (like a `tar.gz` archive.)
+```
+$ gpg --encrypt -z 0 ---recipient RECEPIENT-PUB-KEY myarchive.tar.gz
+```
+
+Encrypt contents from standard input
+```
+$ cat "This is a secret message" | gpg --encrypt --sign --recipient RECEPIENT-PUB-KEY > mymessage.txt.gpg
+$ tar -jc /var/log/secret | gpg -z 0 --encrypt --recipient RECEPIENT-PUB-KEY > secret.tar.bz2.gpg
+```
+
+Symmetrically encrypt a file with a password
+```
+gpg --symmetric file.txt
+```
+
+#### Sign and verify files
+Sign a file without encrypting using a separate **detached signature** (in a separate file). For example we are signing the `image.jpg` file bellow. The result `image.jpg.asc` file must be given to the recepient along with the original file.
+```
+gpg --armor --detach-sig image.jpg
+```
+
+To **verify** the detached signature both files must be present. Take note of the `gpg: assuming signed data in 'image.jpg'` in the output.
+```
+$ gpg --verify image.jpg.asc
+gpg: assuming signed data in 'image.jpg'
+gpg: Signature made Sun Nov 10 02:05:56 2022 CET
+gpg:                using RSA key C509669A4C0679244EF8500996541D6910215E32
+gpg: Good signature from "Jon Doe (Some description) <your.name@email.com>" [ultimate]
+```
+
+By using an **attached signature** the resulting `.asc` file is compressed along with the signature in one single file. You can optionally separate the two files by using the `--decrypt` and `--output` option.
+```
+$ gpg --sign image.jpg
+$ gpg rm image.jpg
+
+$ gpg --verify image.jpg.asc
+gpg: Signature made Sun Nov 10 02:05:56 2022 CET
+gpg:                using RSA key C509669A4C0679244EF8500996541D6910215E32
+gpg: Good signature from "Jon Doe (Some description) <your.name@email.com>" [ultimate]
+
+$ gpg --output image.jpg --decrypt image.jpg.asc
+gpg: Signature made Sun Nov 10 02:05:56 2022 CET
+gpg:                using RSA key C509669A4C0679244EF8500996541D6910215E32
+gpg: Good signature from "Jon Doe (Some description) <your.name@email.com>" [ultimate]
+```
+
+You can also use the `--clear-sign` option to create a **clear sign attached signature**. The content in a cleartext signature is readable without  any  special  software.  OpenPGP  software is only needed to verify the signature.
+```
+$ gpg --clear-sign image.jpg
+```
+
+#### Decryption
+List the recipients of an encrypted file:
+```
+$ gpg --list-only FILE
+```
+
+Just decrypt a file `message.txt.gpg` to `message.txt`. This is the default.
+```
+gpg --decrypt message.txt.gpg
+```
+
+Decrypt a file to an output filename
+```
+$ gpg --output OUTPUT --decrypt ECNRYPTED_FILE
+```
+
+#### Using a key server
+There are some special consideration when using key servers. Most importantly consider uploading a key that DOES NOT conain your email in the description and a public key that you really want to be as public as possible.
+
+Some popular keyservers are:
+```
+pgp.mit.edu
+pool.sks-keyservers.net
+```
+
+From a popular answer on [Unix-StackExchange](https://unix.stackexchange.com/a/482559)
+
+---
+As a general rule, it's not advisable to post personal public keys to key servers. There is no method of removing a key once it's posted and there is no method of ensuring that the key on the server was placed there by the supposed owner of the key.
+
+It is much better to place your public key on a website that you own or control. Some people recommend [keybase.io](https://keybase.io/) for distribution. However, that method tracks participation in various social and technical communities which may not be desirable for some use cases.
+
+---
+
+Upload your public key to a keyserver.
+```
+$ gpg --keyserver SERVER --send-key KEYID
+```
+
+Receive a key from a keyserver:
+```
+$ gpg --keyserver SERVER --recv-key KEYID
+```
+
+There is also a default server configured in your `gpg` applicaiton which will be used if you don't use the `--keyserver` option. To list the preconfigured options use:
+```
+$ gpgconf --list-options gpg
+```
+
+Search for keys on a keyserver:
+```
+$ gpg --keyserver SERVER --search-keys STRING
 ```
 
 ---
