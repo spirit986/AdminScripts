@@ -22,43 +22,10 @@ sudo apt install -y nfs-common jq
 ```
 <br>
 
-If **Alpine** Linux
-```bash
-# Set hostnames respectively
-hostname k3s3.tomspirit.me
-echo k3s3.tomspirit.me >/etc/hostname
-
-# Update the hostname
-vi /etc/hosts
-
-apk add open-iscsi nfs-utils
-rc-update add nfs && rc-service nfs start
-
-# For Longhorn
-apk add curl findmnt lsblk parted htop
-```
-<br>
-
-For **Alpine** Linux shared(slave) mounts need to be enabled otherwise some deployments will fail:
-###### https://ixday.github.io/post/shared_mount/
-```bash
-# Enable this at runtime
-mount --make-rshared /
-
-# Enable at boot time every time
-install -D -m 0755 /dev/stderr /etc/local.d/10-mount.start 2<<-EOF
-#!/bin/sh
-mount --make-rshared /
-EOF
-
-rc-update add local default
-```
-<br>
-
 
 ## Master Node
 
-### Provision the K3s Master
+### 1. Provision the K3s Master
 K3s by default automatically deployes`traefik` as ingress controler. In the bellow command I'm disabling traefik becaue I want to use `nginx-ingress` instead. Additonally `metrics-server` is being disabled because the the helm deployment of `kube-prometheus-stack` includes the metrics server with it.
 
 ```bash
@@ -81,9 +48,9 @@ sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 ```
 <br>
 
-## Worker Nodes
+## 2. Provision the Worker Nodes
 
-Prepare the nodes and mount the partition into `/longhorn`
+First prepare the nodes and mount the partition into `/longhorn`
 ```bash
 # Format and mount the aditional disk
 lsblk -o NAME,HCTL,SIZE,MOUNTPOINT | grep -i sd
@@ -287,5 +254,261 @@ spec:
 ```
 Deploy the ingress
 ```bash
-kubectl -n longhorn-system apply -f longhorn-ingress.yml
+$ kubectl -n longhorn-system apply -f longhorn-ingress.yml
 ```
+
+## MetalLB
+[Installation Reference](https://metallb.universe.tf/installation/#installation-with-helm)
+
+MetalLB will be deployed in L2 mode and for that reason I'm disabling FRR. I also want the controler pod to run on the master node `k3s0`, which is why the appropriate tolerations must be set.
+
+Create the configuration values yaml file:
+```bash
+$ cat >metallb-values.yml <<EOF
+loadBalancerClass: "metallb"
+
+controller:
+  nodeSelector:
+    node-role.kubernetes.io/metallb-controller: "true"
+
+  tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+    effect: NoExecute
+  - key: CriticalAddonsOnly
+    operator: Exists
+    effect: NoSchedule
+
+speaker:
+  frr:
+    enabled: false
+EOF
+```
+
+Deploy metallb using their helm chart:
+```bash
+$ helm repo add metallb https://metallb.github.io/metallb
+$ helm repo update
+$ helm install metallb metallb/metallb --namespace metallb-system --create-namespace -f metallb-values.yml --version 0.13.10
+```
+
+Configure the IP address pool and the L2 advertisement | [Reference](https://metallb.universe.tf/configuration/#layer-2-configuration)
+```bash
+$ cat >IPAddressPool.yml <<EOF
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: home-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 172.16.0.150-172.16.0.200
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default-l2-advertisement
+  namespace: metallb-system
+EOF
+
+$ kubectl apply -f IPAddressPool.yml
+```
+
+### Test MetalLB deployment and the IP address allocation
+First create the namespace:
+```bash
+$ cat >nginx-test-deployments-namespace.yml <<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-test-deployments
+EOF
+```
+
+Create three nginx deployments and apply them.
+```bash
+$ cat >nginx-first-deployment.yml <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nginx-test-deployments
+  name: nginx-first-deployment
+  labels:
+    app: nginx-first-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx-first-deployment
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx-first-deployment
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh"]
+        args: ["-c", "echo 'This is the FIRST nginx deployment' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: nginx-test-deployments
+  name: nginx-first-deployment-service
+  labels:
+    app: nginx-first-deployment
+  #annotations:
+    #metallb.universe.tf/loadBalancerIPs: 192.168.1.100
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx-first-deployment
+  loadBalancerClass: "metallb"
+  type: LoadBalancer
+EOF
+```
+```bash
+$ cat >nginx-second-deployment.yml <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nginx-test-deployments
+  name: nginx-second-deployment
+  labels:
+    app: nginx-second-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx-second-deployment
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-second-deployment
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh"]
+        args: ["-c", "echo 'This is the SECOND nginx deployment' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: nginx-test-deployments
+  name: nginx-second-deployment-service
+  labels:
+    app: nginx-second-deployment
+  #annotations:
+    #metallb.universe.tf/loadBalancerIPs: 192.168.1.100
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx-second-deployment
+  loadBalancerClass: "metallb"
+  type: LoadBalancer
+EOF
+```
+```bash
+$ cat >nginx-third-deployment.yml <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nginx-test-deployments
+  name: nginx-third-deployment
+  labels:
+    app: nginx-third-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx-third-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-third-deployment
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh"]
+        args: ["-c", "echo 'This is the THIRD nginx deployment' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: nginx-test-deployments
+  name: nginx-third-deployment-service
+  labels:
+    app: nginx-third-deployment
+  #annotations:
+    #metallb.universe.tf/loadBalancerIPs: 192.168.1.100
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx-third-deployment
+  loadBalancerClass: "metallb"
+  type: LoadBalancer
+EOF
+```
+
+Apply the deployments:
+```bash
+$ kubectl apply -f nginx-first-deployment.yml
+$ kubectl apply -f nginx-second-deployment.yml
+$ kubectl apply -f nginx-third-deployment.yml
+```
+
+Each of the deployments should have a service of type `LoadBalancer` under the `nginx-test-deployments` namespace with a `Loadbalancer Ingress` field populated by an IP from the IP range configured previously. For example:
+```bash
+$ kubectl get services -n nginx-test-deployments
+NAME                              TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)        AGE
+nginx-first-deployment-service    LoadBalancer   10.43.36.169    172.16.0.150   80:30484/TCP   49m
+nginx-second-deployment-service   LoadBalancer   10.43.85.177    172.16.0.151   80:30553/TCP   47m
+nginx-third-deployment-service    LoadBalancer   10.43.183.195   172.16.0.152   80:32657/TCP   39m
+```
+```bash
+$ kubectl describe service nginx-third-deployment-service -n nginx-test-deployments
+Name:                     nginx-third-deployment-service
+Namespace:                nginx-test-deployments
+Labels:                   app=nginx-third-deployment
+Annotations:              metallb.universe.tf/ip-allocated-from-pool: home-pool
+Selector:                 app=nginx-third-deployment
+Type:                     LoadBalancer
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.183.195
+IPs:                      10.43.183.195
+LoadBalancer Ingress:     172.16.0.152
+Port:                     <unset>  80/TCP
+TargetPort:               80/TCP
+NodePort:                 <unset>  32657/TCP
+Endpoints:                10.42.1.122:80,10.42.2.128:80,10.42.4.87:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:
+  Type     Reason                   Age                 From                Message
+  ----     ------                   ----                ----                -------
+  Normal   IPAllocated              12m (x17 over 37m)  metallb-controller  Assigned IP ["172.16.0.152"]
+  Normal   nodeAssigned             12m (x30 over 37m)  metallb-speaker     announcing from node "k3s2.tomspirit.me" with protocol "layer2"
+  Warning  UnAvailableLoadBalancer  12m (x16 over 37m)  service-controller  There are no available nodes for LoadBalancer
+```
+
+
