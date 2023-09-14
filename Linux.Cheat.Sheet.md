@@ -221,6 +221,36 @@ Generate password for htpasswd with `openssl`
 echo "$USERNAME:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users
 ```
 
+---
+## OpenSSL Working TLS certificates
+---
+###### Source [LinuxHandbook](https://linuxhandbook.com/check-certificate-openssl/)
+
+Check status and get details of a TLS certificate
+```bash
+openssl x509 -in mycert.pem -text -noout
+```
+
+Check SSL Validity of a website
+Source [LinuxHandbook](https://linuxhandbook.com/check-certificate-openssl/)
+```bash
+openssl s_client -connect linuxhandbook.com:443 2>/dev/null | openssl x509 -noout -dates
+```
+
+Verifying Information within a Certificate to get CR details, expiry dates etc..
+```bash
+## .crt Certificate
+openssl x509 -in certificate.crt -text -noout
+
+## .csr Certificate Signing Request
+openssl req -text -noout -verify -in server.csr
+```
+
+Verifying tha KEY type file and its consistency:
+```bash
+openssl rsa -in my_private_key.key -check
+```
+
 
 ---
 ## GIT
