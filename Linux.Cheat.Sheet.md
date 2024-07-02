@@ -103,6 +103,12 @@ Get the key based on a fingerprint
 ssh-keygen -lf pub.key
 ```
 
+Copy ssh public key into a remote server using another private key.
+NOTE: Perform this only once for each new host, otherwise the key will be copied twice.
+```bash
+ssh-copy-id -f -o "IdentityFile=./private_KEY" -i ansible_key_rsa.pub user@192.168.1.120
+```
+
 `Rsync` crash course
 ```bash
 # Copy a single file over SSH that listens on port 9022 on the remote machine also show a progress bar
